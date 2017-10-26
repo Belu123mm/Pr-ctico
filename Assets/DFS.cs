@@ -65,6 +65,7 @@ public static class DFS
                 if (!l.visited)
                     notVisited.Add(l);                
             _slot.Add(l);
+            yield return new WaitForEndOfFrame();
             }
             int rnd = Random.Range(0, notVisited.Count);
             s.RemoveWalls(s.links[rnd]);
@@ -77,7 +78,6 @@ public static class DFS
 
         }
         //esto va en algun lado para alivianar la carga del programa, piensen donde
-        yield return new WaitForEndOfFrame();
 
 
         //esto va como ultimas lineas
