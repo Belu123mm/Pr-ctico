@@ -2,40 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class BFS 
+public static class BFS
 {
     //esta es la lista la cual se encuentra el camino seleccionado
-    public static List<Slot> Path;
+    public static List<Slot> Path = new List<Slot>();
 
     public static IEnumerator BreadthFirstSearch(Slot start, Slot end)
     {
         Queue<Slot> _slot = new Queue<Slot>();
         _slot.Enqueue(start);
         start.visited = true;
-        Queue<Slot> path = new Queue<Slot>();
+        Path.Add(start);
 
-        while (path.Count != 0)
+        while (_slot.Count > 0)
         {
             Slot s = _slot.Dequeue();
-            path.Enqueue(s);
-            if (!s.visited)
+
+            if (s == end)
             {
-                //randomxd
-                s.RemoveWalls(s.links[0]);
-
-
-                List<Slot> notVisited = new List<Slot>();
-                foreach (var l in s.links)
+                while (s != start)
                 {
-                    if (!l.visited)
-                        notVisited.Add(l);
-                }
-                int rnd = Random.RandomRange(0, notVisited.Count);
-                {
-                    //estacosaquenofunciona.jpg 
-                    //dosomething
+                    Path.Add(s);
+                    if (s == start)
+                        break; //no toques esto si no qieres matar la pc
                 }
             }
+            else
+            {
+                foreach (var w in s.walkableNext)
+                {
+                    w.visited = true;
+                    _slot.Enqueue(w);
+                }
+            }
+            yield return new WaitForEndOfFrame();
         }
         //hagan todo aca...
         //recuerden ir llenando la lista del Path
@@ -43,6 +43,7 @@ public static class BFS
         //en algun punto, ustedes sabran en que momento...
         MazeManager.instance.DoneBFS();
         yield return new WaitForEndOfFrame();
+
         //pista: no es al final
     }
 
