@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class DFS
-{
+public static class DFS {
     #region
     /*
      * Si recuerdan lo de la semana pasada, haganlo.
@@ -39,8 +38,7 @@ public static class DFS
     */
     #endregion
 
-    public static IEnumerator DeepFirstSearch(Slot start)
-    {
+    public static IEnumerator DeepFirstSearch( Slot start ) {
         #region
         /*
         //hacer todo aca...
@@ -79,52 +77,76 @@ public static class DFS
         #endregion
 
         //hacer todo aca...
-        Stack<Slot> _slot = new Stack<Slot>();
-        _slot.Push(start);
-        start.visited = true;
+        List<Slot> _slot = new List<Slot>(); //altok
+        List<Slot> visitedRoute = new List<Slot>();  //altok
+        _slot.Add(start); //altok
+        start.visited = true; //altok
+        List<Slot> _nonVisited = new List<Slot>();
+        _nonVisited = MazeManager.maze;
+        Slot end = MazeManager.maze [ MazeManager.maze.Count - 1];
+        Debug.Log(end);
 
-        List<Slot> path = new List<Slot>();
+            
+        while ( _slot.Count > 0 ) {
+            Slot s = _slot [ _slot.Count - 1 ];
+            _slot.Remove(s);
+            _nonVisited.Remove(s);
 
-        while (_slot.Count != 0)
-        {
-            Slot s = _slot.Pop();
+            List<Slot> linksNonVisited = new List<Slot>();
 
-            foreach (var l in s.links)
-            {
-                if (!l.visited)
-                {
-                    path.Add(l);
+            if (s == end ) {
+
+                _slot.Add(_nonVisited [ _nonVisited.Count - 1 ]);
+            }
+
+            if ( _nonVisited.Count == 1 ) {
+                //Termina el laberinto
+
+                foreach ( var item in MazeManager.maze )
+                    item.visited = false;
+                MazeManager.instance.DoneDFS();
+
+                yield return new WaitForEndOfFrame();
+
+            }
+            foreach ( var l in s.links ) {      //La cosa es que si uno de los links es el final pos haga la conexion con ese y empieze de la lista de no visitados
+                if(l == end ) {
+                    s.RemoveWalls(l);
+                    s.walkableNext.Add(l);
+                    l.visited = true;
+                    visitedRoute.Add(l);
+                    _nonVisited.Remove(l);
+                    _slot.Add(_nonVisited [ _nonVisited.Count - 1 ]);
+                    yield return new WaitForEndOfFrame();
+
+                }else if ( !l.visited ) {
+                    linksNonVisited.Add(l);
                 }
             }
 
-            if (path.Count > 0)
-            {
-                int rnd = Random.Range(0, path.Count - 1);
+            if ( linksNonVisited.Count > 0 ) {
+                int rnd = Random.Range(0, linksNonVisited.Count - 1);
 
-                _slot.Push(path[rnd]);
-                path[rnd].visited = true;
-                s.RemoveWalls(path[rnd]);
-                // quiero suponer que ak va algo con el previus
-                s.walkableNext.Add(path[rnd]);
-                path.Clear();
-            }
-
-            if (path.Count == 0 && _slot.Count > 0)
-            {
-                //Aca deberia poner algo pero no se que, onda se hace pero hay slots sin ser visitados pero como que me quedo sin path
+                s.RemoveWalls(linksNonVisited [ rnd ]);
+                s.walkableNext.Add(linksNonVisited [ rnd ]);
+                linksNonVisited [ rnd ].visited = true;
+                _slot.Add(linksNonVisited [ rnd ]);
+                visitedRoute.Add(linksNonVisited [ rnd ]);
+                _nonVisited.Remove(linksNonVisited [ rnd ]);
+                yield return new WaitForEndOfFrame();
 
             }
-            yield return new WaitForEndOfFrame();
+            Debug.Log(_nonVisited.Count);
+
         }
 
-
-
+    
         //esto va en algun lado para alivianar la carga del programa, piensen donde
         yield return new WaitForEndOfFrame();
         //esto va como ultimas lineas
         //cuando se complete el DFS, se limpian los visitados
         //y se continua al BFS
-        foreach (var item in MazeManager.maze)
+        foreach ( var item in MazeManager.maze )
             item.visited = false;
         MazeManager.instance.DoneDFS();
     }
