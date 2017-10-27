@@ -95,16 +95,6 @@ public static class DFS {
             List<Slot> linksNonVisited = new List<Slot>();
 
 
-            if ( _nonVisited.Count == 0) {
-                //Termina el laberinto
-                Debug.Log("Done ;)");
-                foreach ( var item in MazeManager.maze )
-                    item.visited = false;
-                MazeManager.instance.DoneDFS();
-
-                yield return new WaitForEndOfFrame();
-
-            }
             foreach ( var l in s.links ) {      //La cosa es que si uno de los links es el final pos haga la conexion con ese y empieze de la lista de no visitados
                  if ( !l.visited ) {
                     linksNonVisited.Add(l);
@@ -123,6 +113,7 @@ public static class DFS {
                 yield return new WaitForEndOfFrame();
 
             } else {
+                if (_nonVisited.Count > 0)
                 foreach ( var slt in visitedRoute ) {
                     if (slt.id == _nonVisited [ 0 ].id - 1) {
                         _slot.Add(_nonVisited [ 0 ]);
@@ -132,17 +123,17 @@ public static class DFS {
                 }
             }
             Debug.Log(_nonVisited.Count);
+            Debug.Log(_slot.Count + " slots");
 
         }
 
-    
-        //esto va en algun lado para alivianar la carga del programa, piensen donde
-        yield return new WaitForEndOfFrame();
-        //esto va como ultimas lineas
-        //cuando se complete el DFS, se limpian los visitados
-        //y se continua al BFS
+        Debug.Log("Done ;)");
         foreach ( var item in MazeManager.maze )
             item.visited = false;
         MazeManager.instance.DoneDFS();
+
+        yield return new WaitForEndOfFrame();
+
+
     }
 }
