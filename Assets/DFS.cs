@@ -39,93 +39,73 @@ public static class DFS {
     #endregion
 
     public static IEnumerator DeepFirstSearch( Slot start ) {
-        #region
-        /*
-        //hacer todo aca...
-        List<Slot> _slot = new List<Slot>();
-        _slot.Add(start);
-        // start.visited = true;
-        List<Slot> path = new List<Slot>();
-
-        while (_slot.Count != 0)
-        {
-            Debug.Log("hello");
-            Slot s = _slot[_slot.Count - 1];
-            _slot.Remove(s);
-            path.Add(s);
-            if (s == MazeManager.maze[MazeManager.maze.Count - 1])
-            {
-                foreach (var item in MazeManager.maze)
-                    item.visited = false;
-                MazeManager.instance.DoneDFS();
-
-            }
-
-            List<Slot> notVisited = new List<Slot>();
-            foreach (var l in s.links)
-            {
-                if (!l.visited)
-                    notVisited.Add(l);
-                _slot.Add(l);
-                yield return new WaitForEndOfFrame();
-            }
-            int rnd = Random.Range(0, notVisited.Count);
-            s.RemoveWalls(s.links[rnd]);*/
-
-        //estacosaquenofunciona.jpg 
-        //dosomething
-        #endregion
 
         //hacer todo aca...
-        List<Slot> _slot = new List<Slot>(); //altok
+        List<Slot> slot = new List<Slot>(); //altok
         List<Slot> visitedRoute = new List<Slot>();  //altok
-        _slot.Add(start); //altok
+        slot.Add(start); //altok
+        visitedRoute.Add(start);
         start.visited = true; //altok
-        List<Slot> _nonVisited = new List<Slot>();
-        _nonVisited = MazeManager.maze;
-        Slot end = MazeManager.maze [ MazeManager.maze.Count - 1];
-        Debug.Log(end);
-
+        List<Slot> nonVisited = new List<Slot>();
+        nonVisited = MazeManager.maze;
             
-        while ( _slot.Count > 0 ) {
-            Slot s = _slot [ _slot.Count - 1 ];
-            _slot.Remove(s);
-            _nonVisited.Remove(s);
+        while ( slot.Count > 0 ) {
+            Slot s = slot [ slot.Count - 1 ];
+            slot.Remove(s);
+            nonVisited.Remove(s);
 
             List<Slot> linksNonVisited = new List<Slot>();
 
 
-            foreach ( var l in s.links ) {      //La cosa es que si uno de los links es el final pos haga la conexion con ese y empieze de la lista de no visitados
-                 if ( !l.visited ) {
-                    linksNonVisited.Add(l);
+            foreach ( var _l in s.links ) {
+                 if ( !_l.visited ) {
+                    linksNonVisited.Add(_l);
+                    yield return new WaitForEndOfFrame();
                 }
             }
-
             if ( linksNonVisited.Count > 0 ) {
-                int rnd = Random.Range(0, linksNonVisited.Count - 1);
+                int _rnd = Random.Range(0, linksNonVisited.Count);
 
-                s.RemoveWalls(linksNonVisited [ rnd ]);
-                s.walkableNext.Add(linksNonVisited [ rnd ]);
-                linksNonVisited [ rnd ].visited = true;
-                _slot.Add(linksNonVisited [ rnd ]);
-                visitedRoute.Add(linksNonVisited [ rnd ]);
-                _nonVisited.Remove(linksNonVisited [ rnd ]);
+                s.RemoveWalls(linksNonVisited [ _rnd ]);
+                s.walkableNext.Add(linksNonVisited [ _rnd ]);
+                linksNonVisited [ _rnd ].visited = true;
+                slot.Add(linksNonVisited [ _rnd ]);
+                visitedRoute.Add(linksNonVisited [ _rnd ]);
+                nonVisited.Remove(linksNonVisited [ _rnd ]);
                 yield return new WaitForEndOfFrame();
 
-            } else {
-                if (_nonVisited.Count > 0)
-                foreach ( var slt in visitedRoute ) {
-                    if (slt.id == _nonVisited [ 0 ].id - 1) {
-                        _slot.Add(_nonVisited [ 0 ]);
-                        slt.RemoveWalls(_nonVisited [ 0 ]);
-                        _nonVisited[0].visited = true;
+            } else if ( nonVisited.Count != 0 ) {
+                Slot _nvisited = nonVisited [ 0 ];
+                Slot _previousNVisited = null;
+
+                foreach ( var _slt in visitedRoute ) {
+                    if ( _slt.id == _nvisited.id - 1 ) {
+                        _previousNVisited = _slt;
+                        yield return new WaitForEndOfFrame();
+                        break;
                     }
                 }
-            }
-            Debug.Log(_nonVisited.Count);
-            Debug.Log(_slot.Count + " slots");
+                slot.Add(_nvisited);
+                _nvisited.visited = true;
+                nonVisited.Remove(_nvisited);
+                visitedRoute.Add(_nvisited);
+                yield return new WaitForEndOfFrame();
+                foreach ( var linked in _nvisited.links ) {
+                    if(linked == _previousNVisited ) {
+                _previousNVisited.walkableNext.Add(linked);
+                _previousNVisited.RemoveWalls(linked);
+                        yield return new WaitForEndOfFrame();
 
-        }
+                    }
+                    yield return new WaitForEndOfFrame();
+
+                }
+                yield return new WaitForEndOfFrame();
+
+
+            }
+
+       }
 
         Debug.Log("Done ;)");
         foreach ( var item in MazeManager.maze )
