@@ -94,14 +94,10 @@ public static class DFS {
 
             List<Slot> linksNonVisited = new List<Slot>();
 
-            if (s == end ) {
 
-                _slot.Add(_nonVisited [ _nonVisited.Count - 1 ]);
-            }
-
-            if ( _nonVisited.Count == 1 ) {
+            if ( _nonVisited.Count == 0) {
                 //Termina el laberinto
-
+                Debug.Log("Done ;)");
                 foreach ( var item in MazeManager.maze )
                     item.visited = false;
                 MazeManager.instance.DoneDFS();
@@ -110,16 +106,7 @@ public static class DFS {
 
             }
             foreach ( var l in s.links ) {      //La cosa es que si uno de los links es el final pos haga la conexion con ese y empieze de la lista de no visitados
-                if(l == end ) {
-                    s.RemoveWalls(l);
-                    s.walkableNext.Add(l);
-                    l.visited = true;
-                    visitedRoute.Add(l);
-                    _nonVisited.Remove(l);
-                    _slot.Add(_nonVisited [ _nonVisited.Count - 1 ]);
-                    yield return new WaitForEndOfFrame();
-
-                }else if ( !l.visited ) {
+                 if ( !l.visited ) {
                     linksNonVisited.Add(l);
                 }
             }
@@ -135,6 +122,14 @@ public static class DFS {
                 _nonVisited.Remove(linksNonVisited [ rnd ]);
                 yield return new WaitForEndOfFrame();
 
+            } else {
+                foreach ( var slt in visitedRoute ) {
+                    if (slt.id == _nonVisited [ 0 ].id - 1) {
+                        _slot.Add(_nonVisited [ 0 ]);
+                        slt.RemoveWalls(_nonVisited [ 0 ]);
+                        _nonVisited[0].visited = true;
+                    }
+                }
             }
             Debug.Log(_nonVisited.Count);
 

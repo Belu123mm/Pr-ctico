@@ -9,34 +9,6 @@ public static class BFS
 
     public static IEnumerator BreadthFirstSearch(Slot start, Slot end)
     {
-        Queue<Slot> _slot = new Queue<Slot>();
-        _slot.Enqueue(start);
-        start.visited = true;
-        Path.Add(start);
-
-        while (_slot.Count > 0)
-        {
-            Slot s = _slot.Dequeue();
-
-            if (s == end)
-            {
-                while (s != start)
-                {
-                    Path.Add(s);
-                    if (s == start)
-                        break; //no toques esto si no qieres matar la pc
-                }
-            }
-            else
-            {
-                foreach (var w in s.walkableNext)
-                {
-                    w.visited = true;
-                    _slot.Enqueue(w);
-                }
-            }
-            yield return new WaitForEndOfFrame();
-        }
         //hagan todo aca...
         //recuerden ir llenando la lista del Path
 
